@@ -1,0 +1,67 @@
+import java.util.Random;
+import java.util.Scanner;
+
+public class TokenBucket {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Random rd = new Random();
+
+        System.out.println("Enter number of Packets: ");
+        int n = sc.nextInt();
+
+        int tokens = 0;
+
+        int bsize = 0;
+        System.out.print("Enter Bucket size: ");
+        bsize = sc.nextInt();
+
+        tokens = bsize;
+
+        int outrate = rd.nextInt(bsize - 1) + 1;
+
+        int[] packets = new int[n];
+
+        System.out.println("Enter Packet sizes in Order");
+
+        for (int i = 0; i < n; i++)
+            packets[i] = sc.nextInt();
+
+        int i = 0, cycle = 0, remain = 0, sent = 0;
+
+        System.out.println("Cycle \t Packets \t Sent \t Remains");
+
+        while (true) {
+
+            cycle++;
+            tokens = bsize - remain;
+
+            if (i < n && packets[i] <= tokens) {
+                if (remain + packets[i] <= outrate) {
+                    sent = remain + packets[i];
+                    remain = 0;
+                } else {
+                    remain += (packets[i] - outrate);
+                    sent = outrate;
+                }
+
+                System.out.println(cycle + "\t" + packets[i] + "\t" + sent + "\t" + remain);
+                packets[i] = Math.max(0, packets[i] - tokens);
+
+                if (packets[i] == 0) {
+                    i++;
+                    if (i == n) {
+                        if (remain == 0)
+                            break;
+                        else {
+                            remain = Math.min(bsize, remain);
+                            continue;
+                        }
+                    }
+                }
+            } else {
+                remain = Math.min(bsize, remain);
+            }
+        }
+    }
+}
